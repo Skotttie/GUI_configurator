@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Hörgeräte 3D Konfigurator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- UI für den Konfigurator -->
+  <div id="ui">
+    <label for="farbe">Farbe wählen:</label>
+    <select id="farbe">
+      <option value="#555">Grau</option>
+      <option value="#c0a060">Beige</option>
+      <option value="#000">Schwarz</option>
+      <option value="#fff">Weiß</option>
+    </select>
+  </div>
+
+  <!-- three.js laden -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/examples/js/loaders/GLTFLoader.js"></script>
+
+  <script>
+    // Szene, Kamera, Renderer
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({antialias: true});
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    // Licht
+    const light = new THREE.DirectionalLight(0xffffff, 1);
+    light.position.set(5,5,5);
+    scene.add(light);
+
+    // Bodenlicht für weiche Ausleuchtung
+    const ambient = new THREE.AmbientLight(0x404040, 2);
+    scene.add(ambient);
+
+    // Hörgeräte-3D-Modell laden (Beispiel: glTF/.glb)
+    const loader = new THREE.GLTFLoader();
+    let model;
+
+loader.load("modelle/d21047729_angepasst_glb", (gltf) => {
+  model = gltf.scene;
+  model.scale.set(2,2,2);
+  scene.add(model);
+});
+
+
+    // Kamera-Position
+    camera.position.z = 5;
+
+    // UI: Farbe ändern
+    document.getElementById("farbe").addEventListener("change", (e) => {
+      if(model) {
+        model.traverse((child) => {
+          if(child.isMesh) {
+            child.material.color.set(e.target.value);
+          }
+        });
+      }
+    });
+
+    // Animationsloop
+    function animate() {
+      requestAnimationFrame(animate);
+      if(model) {
+        model.rotation.y += 0.01;  // leichte Rotation
+      }
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    // Fenstergröße anpassen
+    window.addEventListener("resize", () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+  </script>
+</body>
+</html>

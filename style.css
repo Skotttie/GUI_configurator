@@ -1,0 +1,49 @@
+/* Hintergrund */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #eceff1, #ffffff);
+  overflow: hidden;
+}
+
+/* UI-Box */
+#ui {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: rgba(255,255,255,0.95);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  max-width: 220px;
+}
+
+/* Überschrift */
+#ui h1 {
+  font-size: 18px;
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+/* Labels & Dropdowns */
+#ui label {
+  display: block;
+  margin: 10px 0 5px;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+#ui select {
+  width: 100%;
+  padding: 6px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: #f9f9f9;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+#ui select:hover {
+  border-color: #888;
+}
