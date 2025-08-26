@@ -2,83 +2,119 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Hörgeräte 3D Konfigurator</title>
   <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <!-- UI für den Konfigurator -->
-  <div id="ui">
-    <label for="farbe">Farbe wählen:</label>
-    <select id="farbe">
-      <option value="#555">Grau</option>
-      <option value="#c0a060">Beige</option>
-      <option value="#000">Schwarz</option>
-      <option value="#fff">Weiß</option>
-    </select>
-  </div>
 
-  <!-- three.js laden -->
+  <!-- Three.js + GLTFLoader -->
   <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/examples/js/loaders/GLTFLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/examples/js/controls/OrbitControls.js"></script>
+</head>
+<body>
+  <div id="container">
+    <!-- Sidebar UI -->
+    <div id="ui">
+      <h1>Hörgeräte Konfigurator</h1>
+
+      <label for="modell">Modell wählen:</label>
+      <select id="modell">
+        <option value="hoergeraet1.glb">d21047729_angepasst_glb</option>
+        <option value="hoergeraet2.glb">d21048890_2_angepasst_glb</option>
+      </select>
+
+      <label for="farbe">Farbe wählen:</label>
+      <select id="farbe">
+        <option value="#555">Grau</option>
+        <option value="#c0a060">Beige</option>
+        <option value="#000">Schwarz</option>
+        <option value="#fff">Weiß</option>
+        <option value="#0044cc">Blau</option>
+      </select>
+    </div>
+
+    <!-- 3D Viewer -->
+    <div id="viewer"></div>
+  </div>
 
   <script>
+  
     // Szene, Kamera, Renderer
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+    const camera = new THREE.PerspectiveCamera(75, 600/400, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({antialias: true});
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
+    renderer.setSize(600, 400);
+    document.getElementById("viewer").appendChild(renderer.domElement);
 
     // Licht
     const light = new THREE.DirectionalLight(0xffffff, 1);
     light.position.set(5,5,5);
     scene.add(light);
+    scene.add(new THREE.AmbientLight(0x404040, 2));
 
-    // Bodenlicht für weiche Ausleuchtung
-    const ambient = new THREE.AmbientLight(0x404040, 2);
-    scene.add(ambient);
+    // ✅ Testwürfel einfügen (hier kannst du ihn notfalls später löschen)
+    const geometry = new THREE.BoxGeometry();
+    const material = new THREE.MeshStandardMaterial({color: 0x00ff00});
+    const cube = new THREE.Mesh(geometry, material);
+    scene.add(cube);
 
-    // Hörgeräte-3D-Modell laden (Beispiel: glTF/.glb)
+    // Controls
+    const controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+    // Loader
     const loader = new THREE.GLTFLoader();
     let model;
 
-loader.load("modelle/d21047729_angepasst_glb", (gltf) => {
-  model = gltf.scene;
-  model.scale.set(2,2,2);
-  scene.add(model);
-});
+    function ladeModell(dateiname) {
+      if(model) {
+        scene.remove(model);
+        model = null;
+      }
+      loader.load("modelle/" + dateiname, (glb) => {
+        model = glb.scene;
+        model.scale.set(2,2,2);
+        scene.add(model);
+        setzeFarbe(document.getElementById("farbe").value);
 
+        // Kamera auf Modell ausrichten
+        const box = new THREE.Box3().setFromObject(model);
+        const center = box.getCenter(new THREE.Vector3());
+        const size = box.getSize(new THREE.Vector3());
+        const maxDim = Math.max(size.x, size.y, size.z);
+        const fov = camera.fov * (Math.PI / 180);
+        const cameraZ = Math.abs(maxDim / Math.sin(fov / 2)) * 1.5;
+        camera.position.set(center.x, center.y, cameraZ);
+        camera.lookAt(center);
+        controls.target.copy(center);
+        controls.update();
+      });
+    }
 
-    // Kamera-Position
-    camera.position.z = 5;
-
-    // UI: Farbe ändern
-    document.getElementById("farbe").addEventListener("change", (e) => {
+    function setzeFarbe(farbe) {
       if(model) {
         model.traverse((child) => {
           if(child.isMesh) {
-            child.material.color.set(e.target.value);
+            child.material.color.set(farbe);
           }
         });
       }
-    });
+    }
 
-    // Animationsloop
+    document.getElementById("modell").addEventListener("change", (e) => ladeModell(e.target.value));
+    document.getElementById("farbe").addEventListener("change", (e) => setzeFarbe(e.target.value));
+
+    camera.position.z = 5;
+
     function animate() {
       requestAnimationFrame(animate);
-      if(model) {
-        model.rotation.y += 0.01;  // leichte Rotation
-      }
       renderer.render(scene, camera);
     }
     animate();
 
-    // Fenstergröße anpassen
-    window.addEventListener("resize", () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    });
+    // Start mit erstem Modell
+    ladeModell("d21047729_angepasst_glb.glb");
   </script>
 </body>
 </html>

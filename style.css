@@ -1,49 +1,71 @@
-/* Hintergrund */
-body {
+/* Reset & Grundlayout */
+* {
   margin: 0;
-  font-family: Arial, sans-serif;
-  background: linear-gradient(135deg, #eceff1, #ffffff);
-  overflow: hidden;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", Roboto, sans-serif;
 }
 
-/* UI-Box */
-#ui {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  background: rgba(255,255,255,0.95);
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-  max-width: 220px;
-}
-
-/* Überschrift */
-#ui h1 {
-  font-size: 18px;
-  margin-top: 0;
-  margin-bottom: 15px;
+body {
+  background: linear-gradient(135deg, #f9f9f9, #e6e6e6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 100vh;
   color: #333;
 }
 
-/* Labels & Dropdowns */
-#ui label {
+/* Canvas für 3D-Modell */
+canvas {
   display: block;
-  margin: 10px 0 5px;
-  font-weight: bold;
-  font-size: 14px;
+  width: 100%;
+  height: 100vh;
+  max-height: 80vh;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+  margin-top: 20px;
 }
 
-#ui select {
-  width: 100%;
-  padding: 6px;
-  border-radius: 6px;
+/* Steuerbereich (Dropdowns, Buttons) */
+.controls {
+  margin: 20px 0;
+  padding: 12px 20px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+/* Dropdowns / Select */
+select {
+  padding: 8px 12px;
+  border-radius: 8px;
   border: 1px solid #ccc;
-  background: #f9f9f9;
+  background: #fdfdfd;
   font-size: 14px;
   cursor: pointer;
+  transition: border 0.2s ease;
 }
 
-#ui select:hover {
-  border-color: #888;
+select:hover {
+  border-color: #999;
+}
+
+/* Buttons */
+button {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  background: #0077ff;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+button:hover {
+  background: #005fcc;
 }
