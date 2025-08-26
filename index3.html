@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D Hörgeräte Viewer</title>
+  <link rel="stylesheet" href="style2.css">
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  <style>
+    body { font-family: sans-serif; margin:0; background:#f6f6f6; display:flex; flex-direction:column; align-items:center; }
+    .controls { padding:10px; display:flex; gap:10px; flex-wrap:wrap; }
+    select, button { padding:4px 8px; font-size:14px; }
+    model-viewer { width:80vw; height:70vh; background:#ddd; border-radius:8px; }
+  </style>
+</head>
+<body>
+
+<div class="controls">
+  <label>Modell:
+    <select id="modell">
+      <option value="modelle/hoergeraet1.glb">hoergeraet1.glb</option>
+      <option value="modelle/hoergeraet2.glb">hoergeraet2.glb</option>
+    </select>
+  </label>
+
+  <label>Farbe:
+    <select id="farbe">
+      <option value="#cccccc">Grau</option>
+      <option value="#000000">Schwarz</option>
+      <option value="#ffffff">Weiß</option>
+      <option value="#c0a060">Beige</option>
+    </select>
+  </label>
+
+  <button id="reloadBtn">Neu laden</button>
+</div>
+
+<model-viewer id="viewer" src="modelle/hoergeraet1.glb" alt="3D Hörgerät" camera-controls auto-rotate ar shadow-intensity="1"></model-viewer>
+
+<script>
+const viewer = document.getElementById('viewer');
+const modellSelect = document.getElementById('modell');
+const farbeSelect = document.getElementById('farbe');
+const reloadBtn = document.getElementById('reloadBtn');
+
+// Modell wechseln
+modellSelect.addEventListener('change', e => {
+  viewer.src = e.target.value;
+});
+
+// Farbe ändern (funktioniert nur wenn das Modell "MaterialColor" als Eigenschaft hat)
+farbeSelect.addEventListener('change', e => {
+  viewer.style.setProperty('--model-color', e.target.value);
+});
+
+// Reload
+reloadBtn.addEventListener('click', () => {
+  viewer.src = modellSelect.value;
+});
+</script>
+
+</body>
+</html>
