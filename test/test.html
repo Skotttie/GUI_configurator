@@ -10,9 +10,8 @@
 <body>
 
 <a href="https://www.wsa.com/" target="_blank">
-  <img src="wsa modelviewer logo.png" alt="Logo" id="logo">
+  <img src="data\wsa modelviewer logo.png" alt="Logo" id="logo">
 </a>
-
 
 <div id="controls">
   <label>Datei auswählen:
@@ -22,21 +21,57 @@
   <button id="selectBtn">Auswahl bestätigen</button>
 </div>
 
-<model-viewer 
-  id="viewer" 
-  src="wsa circle logo.glb"
-  alt="3D Modell" 
-  camera-controls 
-  auto-rotate 
-  rotation-per-second="30deg" 
-  shadow-intensity="1">
-</model-viewer>
+<div id="sidebarContainer">
+  <div id="sidebar">
+    <button id="toggleSidebar">⯈ Optionen</button>
+    <div id="sidebarContent">
+      <lable>
+        Hintergrundfarbe ändern:
+        <input type="color" id="colorPicker">
+      </lable>
+      <label>
+        AutoRotation:
+        <input type="checkbox" id="autoRotateToggle">
+      </label>
+    </div>
+  </div>
+
+<div id="viewerContainer">
+<!--  <img src="data\vollbild icon.png" id="fullscreenImg" alt="Fullscreen" title="Fullscreen"> --> 
+  <button id="fullscreenBtn">Vollbild</button>
+
+  <model-viewer 
+    id="viewer" 
+    src="data\wsa circle logo.glb"
+    alt="3D Modell" 
+    camera-controls 
+    auto-rotate 
+    auto-rotate-delay="1000"
+    rotation-per-second="30deg" 
+    shadow-intensity="1">
+  </model-viewer>
+</div>
 
 <script>
 const fileInput = document.getElementById('fileInput');
 const viewer = document.getElementById('viewer');
 const resetBtn = document.getElementById('resetBtn');
+const fullscreenBtn = document.getElementById('fullscreenBtn'); /* auf 'fullscreenImg' ändern wenn Img aktiviert werden soll */
+const toggleSidebar = document.getElementById('toggleSidebar');
+const sidebar = document.getElementById('sidebar');
 
+// Variablen für die Startwerte
+let startOrbit, startTarget, startFieldOfView;
+
+// Wenn irgendein Modell geladen wird (egal ob Standard oder Upload)
+viewer.addEventListener('load', () => {
+  startOrbit = viewer.cameraOrbit;
+  startTarget = viewer.cameraTarget;
+  startFieldOfView = viewer.fieldOfView;
+  console.log("Startwerte gespeichert:", startOrbit, startTarget, startFieldOfView);
+});
+
+// Upload von neuen Dateien
 fileInput.addEventListener('change', (event) => {
   const file = event.target.files[0];
   if (!file) return;
@@ -52,9 +87,32 @@ fileInput.addEventListener('change', (event) => {
 
 // Reset-Kamera
 resetBtn.addEventListener('click', () => {
-  viewer.cameraOrbit = "0deg 75deg 2.5m"; // Standard-Kamera Position (Beispiel)
-  viewer.cameraTarget = "0m 0m 0m";
-  viewer.jumpCameraToGoal();
+  if (startOrbit && startTarget && startFieldOfView) {
+    viewer.cameraOrbit = startOrbit;
+    viewer.cameraTarget = startTarget;
+    viewer.fieldOfView = startFieldOfView;
+    viewer.jumpCameraToGoal();
+    console.log("Reset ausgeführt");
+  } else {
+    console.log("Noch keine Startwerte gespeichert!");
+  }
+});
+
+// VollbildButton
+fullscreenBtn.addEventListener('click', () => {
+  if (!document.fullscreenElement) {
+    viewer.requestFullscreen();
+  } else {
+    document.exitFullscreen();
+  }
+})
+
+// Sidebar
+toggleSidebar.addEventListener('click', () => {
+  sidebar.classList.toggle('open');
+  toggleSidebar.textContent = sidebar.classList.contains('open') 
+    ? "⯆ Optionen" 
+    : "⯈ Optionen";
 });
 </script>
 
