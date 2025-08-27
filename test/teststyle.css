@@ -23,6 +23,16 @@ body {
   align-items: center;
 }
 
+/* WSA Logo */
+#logo {
+  position: fixed;   /* Immer sichtbar, auch beim Scrollen */
+  top: 30px;         /* Abstand vom oberen Rand */
+  right: 30px;       /* Abstand vom rechten Rand */
+  width: 400px;       /* Breite des Logos */
+  height: auto;      /* Höhe automatisch proportional */
+  z-index: 1000;     /* Sicherstellen, dass es über allem liegt */
+}
+
 label {
   font-size: 14px;
   font-weight: 500;
@@ -31,9 +41,22 @@ label {
 input[type="file"], button {
   padding: 6px 10px;
   border-radius: 6px;
-  border: 1px solid #ccc;
+  border: 1px solid #8300ff;
   cursor: pointer;
   font-size: 14px;
+}
+
+#selectBtn {
+  font-size: 16px;
+  padding: 10px 20px;     /* runde Form */
+  border-radius: 50px;    /* auffällige Form */
+/*  background: linear-gradient(45deg, #ff8800, #ffcc00); /* Farbverlauf */
+  background: #8300ff;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3); /* 3D-Effekt */
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
 /* 3D Viewer Styling */

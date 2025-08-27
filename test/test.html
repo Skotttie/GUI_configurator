@@ -9,15 +9,22 @@
 </head>
 <body>
 
+<a href="https://www.wsa.com/" target="_blank">
+  <img src="wsa modelviewer logo.png" alt="Logo" id="logo">
+</a>
+
+
 <div id="controls">
   <label>Datei auswählen:
     <input type="file" id="fileInput" accept=".glb">
   </label>
   <button id="resetBtn">Ansicht zurücksetzen</button>
+  <button id="selectBtn">Auswahl bestätigen</button>
 </div>
 
 <model-viewer 
   id="viewer" 
+  src="wsa circle logo.glb"
   alt="3D Modell" 
   camera-controls 
   auto-rotate 
