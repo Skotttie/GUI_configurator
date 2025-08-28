@@ -40,6 +40,7 @@ body {
   left: 2vw;
   width: 18.5vw;               /* Sidebar relativ zur Breite */
   max-width: 400px;
+  max-height: 4vh;
   background: #ffffff;
   border-radius: 1vw;
   box-shadow: 0 0.4vh 1vh rgba(0,0,0,0.2);
@@ -50,10 +51,11 @@ body {
 }
 #sidebar.open {
   transform: translateX(0);
+  max-height: 60vh;
 }
 #toggleSidebar{
   width: 100%;
-  padding: 1vh 1vw;
+  padding: 0.7vh 1vw;
   border: none;
   background: #ffffff;
   color: #333;
@@ -75,16 +77,18 @@ body {
 #sidebar.open #sidebarContent .opt {
   max-height: 10vh; /* oder etwas Großes wie 100vh */
 }
-#sidebarContent .opt {
+#sidebarContent {
   max-height: 0;
   overflow: hidden;
+  flex-direction: column;
   display: flex;
   flex-direction: column;
-  gap: 0.5vw;
-  font-weight: 600;    /* text dicke bestimmen */
+  align-items: center;
+  justify-content: center;
+  gap: 0.6vw;   /* abstand zwischen den sidebar objekten */
+  font-weight: 500;    /* text dicke bestimmen */
   transition: max-height 0.4s ease;
   will-change: max-height;
-  align-items: center;
 }
 #sidebarContent .opt input[type="checkbox"] {
   width: 18px;             /* Größe der Checkbox */
@@ -98,6 +102,31 @@ body {
 }
 /* Kleiner Helfer: Checkbox-Farbe passend */
 #sidebarContent input[type="checkbox"] { accent-color: #8300ff; }
+#bgColorPicker {
+  width: 40px;
+  height: 24px;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+#resetBgBtn {
+  margin-top: 1vh;
+  padding: 0.5vh 1vw;
+  border-radius: 0.5vw;
+  border: 1px solid #8300ff;
+  background: #8300ff;
+  color: white;
+  cursor: pointer;
+}
+#fullscreenBtn {
+  margin-top: 1vh;
+  padding: 0.5vh 1vw;
+  border-radius: 0.5vw;
+  border: 1px solid #8300ff;
+  background: #8300ff;
+  color: white;
+  cursor: pointer;  
+}
 
 /* Logo */
 #logo {
@@ -113,7 +142,7 @@ body {
 label {
   font-size: 0.9rem;
   font-family: "myFonts", Lexender-Regular;
-  font-weight: 500;
+  font-weight: 550;
 }
 
 input[type="file"], button {
@@ -138,11 +167,11 @@ input[type="file"], button {
   box-shadow: 0 0.4vh 1vh rgba(0,0,0,0.3);
   transition: transform 0.2s, box-shadow 0.2s;
 }
-
+/*
 #fullscreenBtn {
   position: absolute;
   border: none;
-  left: -8vw;
+  left: -9vw;
   bottom: 3vh;
   background: #8300ff;
   color: #ffffff;
@@ -156,7 +185,7 @@ input[type="file"], button {
 #fullscreenBtn:hover {
   background: #555;
 }
-
+*/
 /* 3D Viewer Styling */
 model-viewer {
   width: 80vw;
@@ -166,6 +195,17 @@ model-viewer {
   margin: 3vh 0;
   border-radius: 1vw;
   box-shadow: 0 0.6vh 1.5vh rgba(0,0,0,0.15);
+}
+
+#bgImg {
+  position: fixed;   /* fixiert im Fenster */
+  bottom: 0;         /* unten */
+  left: 0;           /* links */
+  width: 150px;      /* Größe */
+  height: auto;
+  z-index: -1;       /* hinter allen anderen Elementen */
+  pointer-events: none; /* klickbar durchlässig */
+  opacity: 1;      /* optional */
 }
 
 /* Für kleine Bildschirme */

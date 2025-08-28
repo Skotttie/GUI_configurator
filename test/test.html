@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title> WSA model-viewer </title>
+  <link rel="icon" type="image/png" href="data/wsa logo v2.png">
   <link rel="stylesheet" href="teststyle.css">
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 </head>
@@ -12,13 +13,14 @@
 <a href="https://www.wsa.com/" target="_blank">
   <img src="data\wsa modelviewer logo.png" alt="Logo" id="logo">
 </a>
+<img src="data/wsa transparent logo.png" alt="Hintergrund" id="bgImg">
 
 <div id="controls">
   <label>Import File:
     <input type="file" id="fileInput" accept=".glb">
   </label>
-  <button id="resetBtn">Reset view</button>
-  <button id="selectBtn">Select</button>
+  <button id="resetBtn">Reset view ↺</button>
+  <button id="selectBtn">Select</button> 
 </div>
 
 <div id="sidebarContainer">
@@ -29,10 +31,17 @@
   </button>
 
   <div id="sidebarContent">
+    <button id="fullscreenBtn">Fullscreen ⛶</button>
     <label class="opt">
       Auto-Rotation 
       <input type="checkbox" id="autoRotateToggle" checked>
     </label>
+    <label class="opt">
+      Hintergrundfarbe:
+      <input type="color" id="bgColorPicker" value="#ffffff">
+    </label>
+  <!-- Reset Hintergrundfarbe -->
+  <button id="resetBgBtn">Standardfarbe</button>
 
     <!-- weitere Optionen hier -->
     <!--
@@ -48,7 +57,7 @@
 
 <div id="viewerContainer">
 <!--  <img src="data\vollbild icon.png" id="fullscreenImg" alt="Fullscreen" title="Fullscreen"> --> 
-  <button id="fullscreenBtn">Fullscreen</button>
+<!--  <button id="fullscreenBtn">Fullscreen ⛶</button> -->
 
   <model-viewer 
     id="viewer" 
@@ -71,6 +80,8 @@ const toggleSidebar = document.getElementById('toggleSidebar');
 const sidebar = document.getElementById('sidebar');
 const autoRotateToggle = document.getElementById("autoRotateToggle");
 const toggleSidebarBtn = document.getElementById('toggleSidebar');
+const bgColorPicker = document.getElementById("bgColorPicker");
+const resetBgBtn = document.getElementById("resetBgBtn");
 
 
 // Variablen für die Startwerte
@@ -96,6 +107,18 @@ fileInput.addEventListener('change', (event) => {
   viewer.addEventListener('load', () => {
     URL.revokeObjectURL(url);
   }, { once: true });
+});
+
+// Select-Button - weiterleitung
+document.getElementById("selectBtn").addEventListener("click", function() {
+  const file = fileInput.files[0];
+    if (!file) {
+      alert("Bitte wähle zuerst eine .glb Datei aus!");
+      return;
+    }
+  const objectURL = URL.createObjectURL(file);
+  localStorage.setItem("uploadedGLB", objectURL);
+  window.location.href = "arPlatform.html";
 });
 
 // Reset-Kamera
@@ -142,6 +165,19 @@ autoRotateToggle.addEventListener("change", () => {
   } else {
     viewer.removeAttribute("auto-rotate");
   }
+});
+// Standardfarbe merken
+const defaultViewerBg = "#e0e0e0";
+
+// Hintergrundfarbe ändern
+bgColorPicker.addEventListener("input", () => {
+  viewer.style.background = bgColorPicker.value;
+});
+
+// Reset auf Standardfarbe
+resetBgBtn.addEventListener("click", () => {
+  viewer.style.background = defaultViewerBg;
+  bgColorPicker.value = defaultViewerBg;
 });
 </script>
 
