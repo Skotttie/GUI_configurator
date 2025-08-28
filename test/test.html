@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title> wsa model-viewer </title>
+  <title> WSA model-viewer </title>
   <link rel="stylesheet" href="teststyle.css">
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
 </head>
@@ -14,31 +14,41 @@
 </a>
 
 <div id="controls">
-  <label>Datei auswählen:
+  <label>Import File:
     <input type="file" id="fileInput" accept=".glb">
   </label>
-  <button id="resetBtn">Ansicht zurücksetzen</button>
-  <button id="selectBtn">Auswahl bestätigen</button>
+  <button id="resetBtn">Reset view</button>
+  <button id="selectBtn">Select</button>
 </div>
 
 <div id="sidebarContainer">
-  <div id="sidebar">
-    <button id="toggleSidebar">⯈ Optionen</button>
-    <div id="sidebarContent">
-      <lable>
-        Hintergrundfarbe ändern:
-        <input type="color" id="colorPicker">
-      </lable>
-      <label>
-        AutoRotation:
-        <input type="checkbox" id="autoRotateToggle">
-      </label>
-    </div>
+<!-- Sidebar liegt im selben Container wie der Viewer -->
+<div id="sidebar">
+  <button id="toggleSidebar" type="button" aria-controls="sidebarContent" aria-expanded="false">
+    ⯈ Optionen
+  </button>
+
+  <div id="sidebarContent">
+    <label class="opt">
+      Auto-Rotation 
+      <input type="checkbox" id="autoRotateToggle" checked>
+    </label>
+
+    <!-- weitere Optionen hier -->
+    <!--
+    <label class="opt">
+      Beleuchtung
+      <input type="range" min="0" max="100" value="50">
+    </label>
+    -->
   </div>
+</div>
+</div>
+
 
 <div id="viewerContainer">
 <!--  <img src="data\vollbild icon.png" id="fullscreenImg" alt="Fullscreen" title="Fullscreen"> --> 
-  <button id="fullscreenBtn">Vollbild</button>
+  <button id="fullscreenBtn">Fullscreen</button>
 
   <model-viewer 
     id="viewer" 
@@ -54,11 +64,14 @@
 
 <script>
 const fileInput = document.getElementById('fileInput');
-const viewer = document.getElementById('viewer');
+const viewer = document.querySelector("model-viewer");
 const resetBtn = document.getElementById('resetBtn');
 const fullscreenBtn = document.getElementById('fullscreenBtn'); /* auf 'fullscreenImg' ändern wenn Img aktiviert werden soll */
 const toggleSidebar = document.getElementById('toggleSidebar');
 const sidebar = document.getElementById('sidebar');
+const autoRotateToggle = document.getElementById("autoRotateToggle");
+const toggleSidebarBtn = document.getElementById('toggleSidebar');
+
 
 // Variablen für die Startwerte
 let startOrbit, startTarget, startFieldOfView;
@@ -106,13 +119,29 @@ fullscreenBtn.addEventListener('click', () => {
     document.exitFullscreen();
   }
 })
-
+/*
 // Sidebar
-toggleSidebar.addEventListener('click', () => {
+ toggleSidebar.addEventListener('click', () => {
   sidebar.classList.toggle('open');
   toggleSidebar.textContent = sidebar.classList.contains('open') 
-    ? "⯆ Optionen" 
-    : "⯈ Optionen";
+    ? "⯆ Options" 
+    : "⯈ Options";
+}); */
+
+// Sidebar ein/aus + Button-Label
+toggleSidebarBtn.addEventListener('click', () => {
+  const isOpen = sidebar.classList.toggle('open');
+  toggleSidebarBtn.textContent = isOpen ? '⯆ Optionen' : '⯈ Optionen';
+  toggleSidebarBtn.setAttribute('aria-expanded', String(isOpen));
+});
+
+// Auto-Rotation steuern
+autoRotateToggle.addEventListener("change", () => {
+  if (autoRotateToggle.checked) {
+    viewer.setAttribute("auto-rotate", "");
+  } else {
+    viewer.removeAttribute("auto-rotate");
+  }
 });
 </script>
 

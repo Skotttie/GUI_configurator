@@ -36,7 +36,7 @@ body {
 }
 #sidebar {
   position: absolute;
-  top: 17vh;
+  top: 5vh;
   left: 2vw;
   width: 18.5vw;               /* Sidebar relativ zur Breite */
   max-width: 400px;
@@ -44,6 +44,7 @@ body {
   border-radius: 1vw;
   box-shadow: 0 0.4vh 1vh rgba(0,0,0,0.2);
   padding: 1vh;
+  z-index: 20;
   transition: transform 0.3s ease;
   transform: translateX(-12vw);
 }
@@ -68,11 +69,35 @@ body {
   text-align: center;
   padding: 1vh;
 }
-#sidebarContent{
-  display: none;
-  flex-direction: column;
-  gap: 1vh;
+#sidebar.open #sidebarContent {
+  max-height: 60vh;
 }
+#sidebar.open #sidebarContent .opt {
+  max-height: 10vh; /* oder etwas Großes wie 100vh */
+}
+#sidebarContent .opt {
+  max-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5vw;
+  font-weight: 600;    /* text dicke bestimmen */
+  transition: max-height 0.4s ease;
+  will-change: max-height;
+  align-items: center;
+}
+#sidebarContent .opt input[type="checkbox"] {
+  width: 18px;             /* Größe der Checkbox */
+  height: 18px;
+  cursor: pointer;
+  margin: 0;               /* Standard-Margin entfernen */
+}
+#toggleRotation {
+  margin-right: 8px;
+  accent-color: #8300ff; /* lila Checkbox */
+}
+/* Kleiner Helfer: Checkbox-Farbe passend */
+#sidebarContent input[type="checkbox"] { accent-color: #8300ff; }
 
 /* Logo */
 #logo {
