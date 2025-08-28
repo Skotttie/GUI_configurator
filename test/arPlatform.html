@@ -1,29 +1,60 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>AR Viewer</title>
+    <title>AR Click Placement</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- A-Frame & AR.js -->
+    <!-- A-Frame -->
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <!-- AR.js -->
     <script src="https://cdn.rawgit.com/jeromeetienne/AR.js/2.2.1/aframe/build/aframe-ar.min.js"></script>
   </head>
   <body style="margin: 0; overflow: hidden;">
-    <a-scene embedded arjs>
-      <!-- Das Modell wird dynamisch eingefügt -->
-      <a-entity id="model" scale="0.5 0.5 0.5" position="0 0 0"></a-entity>
-      <a-marker-camera preset="hiro"></a-marker-camera>
+    <a-scene embedded arjs="sourceType: webcam;">
+      
+      <!-- Unsichtbarer Boden (damit Raycaster was trifft) -->
+      <a-plane id="ground" position="0 0 0" rotation="-90 0 0" width="20" height="20" opacity="0"></a-plane>
+
+      <!-- Modellcontainer -->
+      <a-entity id="model" scale="0.3 0.3 0.3" visible="false"></a-entity>
+
+      <a-camera></a-camera>
     </a-scene>
 
     <script>
-      // Datei-URL aus localStorage holen
+      // Modell aus localStorage laden
       const modelURL = localStorage.getItem("uploadedGLB");
+      const modelEntity = document.getElementById("model");
 
       if (modelURL) {
-        document.getElementById("model").setAttribute("gltf-model", modelURL);
+        modelEntity.setAttribute("gltf-model", modelURL);
       } else {
         alert("Kein Modell gefunden. Bitte zuerst eine Datei hochladen!");
       }
+
+      // Raycaster einrichten
+      const scene = document.querySelector("a-scene");
+      scene.addEventListener("click", function (event) {
+        const camera = document.querySelector("a-camera");
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+
+        // Klick-Koordinaten normalisieren
+        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+        raycaster.setFromCamera(mouse, camera.getObject3D("camera"));
+
+        // Ground suchen
+        const ground = document.getElementById("ground").object3D;
+        const intersects = raycaster.intersectObject(ground, true);
+
+        if (intersects.length > 0) {
+          const point = intersects[0].point;
+          modelEntity.setAttribute("position", `${point.x} ${point.y} ${point.z}`);
+          modelEntity.setAttribute("visible", "true");
+        }
+      });
     </script>
   </body>
 </html>
