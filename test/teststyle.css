@@ -12,161 +12,149 @@ body {
 
 /* Steuerung oben */
 #controls {
-  padding: 15px 20px;
-  margin-top: 40px;
+  padding: 1.5vh 2vw;
+  margin-top: 5vh;
   background: #ffffff;
-  border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  border-radius: 1vw;
+  box-shadow: 0 0.4vh 0.8vh rgba(0,0,0,0.1);
   display: flex;
   flex-wrap: wrap;
-  gap: 15px;
+  gap: 2vw;
   align-items: center;
 }
 
 #viewerContainer {
-  position: relative; /* relative zum Container */
-  display: inline-block; /* größe passt sich an den Viewer an */
+  position: relative; 
+  display: inline-block;
 }
 
+/* Sidebar */
 #sidebarContainer{
   display: flex;
   align-items: flex-start;
-  padding: 20px;
+  padding: 2vh;
 }
 #sidebar {
-  position: absolute;       /* überlagert den Viewer */
-  top: 150px;                /* etwas Abstand von oben */
-  left: 20px;               /* Sidebar links */
-  width: 490px;
+  position: absolute;
+  top: 17vh;
+  left: 2vw;
+  width: 18.5vw;               /* Sidebar relativ zur Breite */
+  max-width: 400px;
   background: #ffffff;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  padding: 10px;
+  border-radius: 1vw;
+  box-shadow: 0 0.4vh 1vh rgba(0,0,0,0.2);
+  padding: 1vh;
   transition: transform 0.3s ease;
-  transform: translateX(-160px); /* standardmäßig eingeklappt */
+  transform: translateX(-12vw);
 }
 #sidebar.open {
-  transform: translateX(0); /* aufgeklappt */
+  transform: translateX(0);
 }
 #toggleSidebar{
   width: 100%;
-  padding: 10px 10px 10px 150px;
+  padding: 1vh 1vw;
   border: none;
   background: #ffffff;
   color: #333;
-  /* font-weight: bold; */
   font-family: "myFonts", Lexender-Regular;
-  font-size: 16px;
+  font-size: 1rem;
   cursor: pointer;
-  border-radius: 6px;
-  margin-bottom: 8px;
-  text-align: left;         /* eingeklappt → Text linksbündig */
+  border-radius: 0.5vw;
+  margin-bottom: 1vh;
+  text-align: right;
   transition: all 0.3s ease;
 }
 #sidebar.open #toggleSidebar{
   text-align: center;
-  padding: 10px;        /* gleichmäßiges Padding */
+  padding: 1vh;
 }
 #sidebarContent{
-  display: none;  /*standardmäßig verborgen */
+  display: none;
   flex-direction: column;
-  gap: 10px;
-}
-#sidebarContent lable {
-  display: flex;
-  flex-direction: colum;
-  font-size: 14px;
+  gap: 1vh;
 }
 
-/* WSA Logo */
+/* Logo */
 #logo {
-  position: fixed;   /* Immer sichtbar, auch beim Scrollen */
-  top: 30px;         /* Abstand vom oberen Rand */
-  right: 30px;       /* Abstand vom rechten Rand */
-  width: 400px;       /* Breite des Logos */
-  height: auto;      /* Höhe automatisch proportional */
-  z-index: 1000;     /* Sicherstellen, dass es über allem liegt */
+  position: fixed;
+  top: 5vh;
+  right: 2vw;
+  width: 20vw;         /* Skaliert proportional */
+  max-width: 250px;    /* aber nicht zu groß */
+  height: auto;
+  z-index: 1000;
 }
 
 label {
-  font-size: 14px;
+  font-size: 0.9rem;
   font-family: "myFonts", Lexender-Regular;
   font-weight: 500;
 }
 
 input[type="file"], button {
-  padding: 6px 10px;
-  border-radius: 6px;
+  padding: 0.6vh 1vw;
+  border-radius: 0.5vw;
   border: 1px solid #8300ff;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 0.9rem;
   font-family: "myFonts", Lexender-Regular;
 }
 
+/* Buttons */
 #selectBtn {
   font-family: "myFonts", Lexender-Regular;
-  font-size: 14px;
-  padding: 10px 20px;     /* runde Form */
-  border-radius: 50px;    /* auffällige Form */
-/*  background: linear-gradient(45deg, #ff8800, #ffcc00); /* Farbverlauf */
+  font-size: 0.9rem;
+  padding: 1vh 2vw;
+  border-radius: 50px;
   background: #8300ff;
   color: white;
   font-weight: bold;
   cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3); /* 3D-Effekt */
+  box-shadow: 0 0.4vh 1vh rgba(0,0,0,0.3);
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
 #fullscreenBtn {
   position: absolute;
   border: none;
-  left: -90px;          /* 60px links vom Viewer */
-  top: 627px;
+  left: -8vw;
+  bottom: 3vh;
   background: #8300ff;
   color: #ffffff;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3); /* 3D-Effekt */
-  border-radius: 6px;
-  padding: 8px 16px;
+  box-shadow: 0 0.4vh 1vh rgba(0,0,0,0.3);
+  border-radius: 0.5vw;
+  padding: 1vh 2vw;
   cursor: pointer;
   font-family: "myFonts", Lexender-Regular;
-  }
+}
 
-fullscreenBtn:hover{
+#fullscreenBtn:hover {
   background: #555;
 }
-/*
-#fullscreenImg {
-  position: absolute;
-  left: -60px;
-  top: 50%;
-  transform: translateY(-50%); 
-  width: 40px;
-  height: 40px;
-  cursor: pointer;
-  transition: transform 0.2s;
-  z-index: 1000;
-}
 
-#fullscreenImg:hover {
-  transform: scale(1.1);
-  transform: translateY(-50%);
-}
-*/
 /* 3D Viewer Styling */
 model-viewer {
   width: 80vw;
-  max-width: 800px;
+  max-width: 1000px;
   height: 70vh;
   background: #e0e0e0;
-  margin: 20px 0;
-  border-radius: 12px;
-  box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+  margin: 3vh 0;
+  border-radius: 1vw;
+  box-shadow: 0 0.6vh 1.5vh rgba(0,0,0,0.15);
 }
 
+/* Für kleine Bildschirme */
 @media (max-width: 600px) {
   model-viewer {
     width: 95vw;
     height: 60vh;
+  }
+  #logo {
+    width: 35vw;
+  }
+  #sidebar {
+    width: 70vw;
+    transform: translateX(-60vw);
   }
 }
 
@@ -176,3 +164,4 @@ model-viewer {
   font-weight: normal;
   font-style: normal;
 }
+
