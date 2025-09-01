@@ -1,60 +1,66 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>AR Click Placement</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>AR Plattform</title>
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: #f0f0f0;
+      font-family: Arial, sans-serif;
+    }
+    #output {
+      margin: 20px;
+      padding: 10px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    model-viewer {
+      width: 100%;
+      height: 80vh;
+      background: #fff;
+    }
+  </style>
+</head>
+<body>
 
-    <!-- A-Frame -->
-    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-    <!-- AR.js -->
-    <script src="https://cdn.rawgit.com/jeromeetienne/AR.js/2.2.1/aframe/build/aframe-ar.min.js"></script>
-  </head>
-  <body style="margin: 0; overflow: hidden;">
-    <a-scene embedded arjs="sourceType: webcam;">
-      
-      <!-- Unsichtbarer Boden (damit Raycaster was trifft) -->
-      <a-plane id="ground" position="0 0 0" rotation="-90 0 0" width="20" height="20" opacity="0"></a-plane>
+  <h2>Dein Modell in AR</h2>
+  <pre id="output">Lade Daten...</pre>
 
-      <!-- Modellcontainer -->
-      <a-entity id="model" scale="0.3 0.3 0.3" visible="false"></a-entity>
+  <model-viewer id="viewer"
+    camera-controls
+    auto-rotate
+    ar
+    ar-modes="scene-viewer quick-look webxr"
+    alt="3D Modell">
+  </model-viewer>
 
-      <a-camera></a-camera>
-    </a-scene>
+  <script>
+    // Datei-Infos abrufen
+    const info = localStorage.getItem("uploadedFileInfo");
+    if (info) {
+      const fileInfo = JSON.parse(info);
+      document.getElementById("output").textContent =
+        `Name: ${fileInfo.name}\nGröße: ${fileInfo.size} Bytes\nTyp: ${fileInfo.type}`;
+    } else {
+      document.getElementById("output").textContent =
+        "⚠️ Keine Datei gefunden. Bitte zuerst auf Seite 1 hochladen.";
+    }
 
-    <script>
-      // Modell aus localStorage laden
-      const modelURL = localStorage.getItem("uploadedGLB");
-      const modelEntity = document.getElementById("model");
+    // Das Modell aus localStorage laden
+    const objectURL = localStorage.getItem("uploadedGLB"); 
+    if (objectURL) {
+      document.getElementById("viewer").src = objectURL;
+    } else {
+      document.getElementById("viewer").insertAdjacentText("beforebegin",
+        "⚠️ Modell konnte nicht geladen werden.");
+    }
+  </script>
 
-      if (modelURL) {
-        modelEntity.setAttribute("gltf-model", modelURL);
-      } else {
-        alert("Kein Modell gefunden. Bitte zuerst eine Datei hochladen!");
-      }
-
-      // Raycaster einrichten
-      const scene = document.querySelector("a-scene");
-      scene.addEventListener("click", function (event) {
-        const camera = document.querySelector("a-camera");
-        const raycaster = new THREE.Raycaster();
-        const mouse = new THREE.Vector2();
-
-        // Klick-Koordinaten normalisieren
-        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-        mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
-        raycaster.setFromCamera(mouse, camera.getObject3D("camera"));
-
-        // Ground suchen
-        const ground = document.getElementById("ground").object3D;
-        const intersects = raycaster.intersectObject(ground, true);
-
-        if (intersects.length > 0) {
-          const point = intersects[0].point;
-          modelEntity.setAttribute("position", `${point.x} ${point.y} ${point.z}`);
-          modelEntity.setAttribute("visible", "true");
-        }
-      });
-    </script>
-  </body>
+</body>
 </html>

@@ -112,14 +112,23 @@ fileInput.addEventListener('change', (event) => {
 // Select-Button - weiterleitung
 document.getElementById("selectBtn").addEventListener("click", function() {
   const file = fileInput.files[0];
-    if (!file) {
-      alert("Bitte wähle zuerst eine .glb Datei aus!");
-      return;
-    }
-  const objectURL = URL.createObjectURL(file);
-  localStorage.setItem("uploadedGLB", objectURL);
+  if (!file) {
+    alert("Bitte wähle zuerst eine .glb Datei aus!");
+    return;
+  }
+
+  // Datei-Infos in localStorage speichern
+  const fileInfo = {
+    name: file.name,
+    size: file.size,
+    type: file.type
+  };
+  localStorage.setItem("uploadedFileInfo", JSON.stringify(fileInfo));
+
+  // Weiterleitung auf die andere Seite
   window.location.href = "arPlatform.html";
 });
+
 
 // Reset-Kamera
 resetBtn.addEventListener('click', () => {
