@@ -117,16 +117,26 @@ document.getElementById("selectBtn").addEventListener("click", function() {
     return;
   }
 
-  // Datei-Infos in localStorage speichern
-  const fileInfo = {
-    name: file.name,
-    size: file.size,
-    type: file.type
-  };
-  localStorage.setItem("uploadedFileInfo", JSON.stringify(fileInfo));
+  const reader = new FileReader();
+  reader.onload = () => {
+    // reader.result enthält die DataURL der Datei
+    try {
+      sessionStorage.setItem("glbDataUrl", reader.result);
+      sessionStorage.setItem("glbFileName", file.name);
 
-  // Weiterleitung auf die andere Seite
-  window.location.href = "arPlatform.html";
+      // Weiterleitung auf die AR-Seite
+      window.location.href = "arPlatform.html";
+    } catch(e) {
+      console.error("Fehler beim Speichern der Datei in SessionStorage:", e);
+      alert("Datei konnte nicht gespeichert werden. Eventuell zu groß.");
+    }
+  };
+  reader.onerror = (err) => {
+    console.error("FileReader Fehler:", err);
+    alert("Fehler beim Lesen der Datei.");
+  };
+
+  reader.readAsDataURL(file); // Datei als DataURL lesen
 });
 
 

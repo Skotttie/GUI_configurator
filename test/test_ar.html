@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>MindAR Test</title>
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-face-aframe.prod.js"></script>
+  <style> body, html { margin:0; height:100%; } </style>
+</head>
+<body>
+
+<a-scene mindar-face embedded
+         color-space="sRGB"
+         renderer="colorManagement: true, physicallyCorrectLights: true"
+         vr-mode-ui="enabled: true"
+         device-orientation-permission-ui="enabled: false">
+
+  <a-assets>
+    <!-- kleines Beispielmodell -->
+    <a-asset-item id="testModel" src="data/test.glb"></a-asset-item>
+  </a-assets>
+
+  <a-camera active="false" position="0 0 0"></a-camera>
+
+  <a-entity mindar-face-target="anchorIndex: 1">
+    <a-entity id="modelEntity" gltf-model="#testModel"
+              scale="0.05 0.05 0.05"
+              position="0.05 0 -0.02"
+              rotation="0 90 0">
+    </a-entity>
+  </a-entity>
+
+</a-scene>
+
+</body>
+</html>
