@@ -71,6 +71,13 @@
   </model-viewer>
 </div>
 
+<!-- Info-slot-->
+ <div id="infoSlot">
+  <h3 id="modelName">No model loaded</h3>
+  <p id="modelPrice">Price: -</p>
+  <p id="modelDesc">No information available</p>
+ </div>
+
 <script>
 const fileInput = document.getElementById('fileInput');
 const viewer = document.querySelector("model-viewer");
@@ -95,7 +102,7 @@ viewer.addEventListener('load', () => {
   console.log("Startwerte gespeichert:", startOrbit, startTarget, startFieldOfView);
 });
 
-// Upload von neuen Dateien
+// Datei wird hochgeladen, ins model-viewer geladen & Infoslot aktualisiert
 fileInput.addEventListener('change', (event) => {
   const file = event.target.files[0];
   if (!file) return;
@@ -104,39 +111,35 @@ fileInput.addEventListener('change', (event) => {
   viewer.src = url;
   viewer.autoRotate = true;
 
+  updateInfoSlot(file.name);
+
   viewer.addEventListener('load', () => {
     URL.revokeObjectURL(url);
   }, { once: true });
-});
 
-// Select-Button - weiterleitung
-document.getElementById("selectBtn").addEventListener("click", function() {
-  const file = fileInput.files[0];
-  if (!file) {
-    alert("Bitte wähle zuerst eine .glb Datei aus!");
-    return;
-  }
-
+  // Datei zwischenspeichern für später (aber noch NICHT weiterleiten!)
   const reader = new FileReader();
   reader.onload = () => {
-    // reader.result enthält die DataURL der Datei
     try {
       sessionStorage.setItem("glbDataUrl", reader.result);
       sessionStorage.setItem("glbFileName", file.name);
-
-      // Weiterleitung auf die AR-Seite
-      window.location.href = "arPlatform.html";
     } catch(e) {
-      console.error("Fehler beim Speichern der Datei in SessionStorage:", e);
+      console.error("Fehler beim Speichern:", e);
       alert("Datei konnte nicht gespeichert werden. Eventuell zu groß.");
     }
   };
-  reader.onerror = (err) => {
-    console.error("FileReader Fehler:", err);
-    alert("Fehler beim Lesen der Datei.");
-  };
+  reader.readAsDataURL(file);
+});
 
-  reader.readAsDataURL(file); // Datei als DataURL lesen
+// Select-Button löst die Weiterleitung aus
+const selectBtn = document.getElementById('selectBtn');
+selectBtn.addEventListener('click', () => {
+  const fileName = sessionStorage.getItem("glbFileName");
+  if (fileName) {
+    window.location.href = "arPlatform.html";
+  } else {
+    alert("Bitte zuerst ein Modell hochladen.");
+  }
 });
 
 
@@ -198,6 +201,36 @@ resetBgBtn.addEventListener("click", () => {
   viewer.style.background = defaultViewerBg;
   bgColorPicker.value = defaultViewerBg;
 });
+
+// modelInfo Datenbank abrufen (.json)
+let modelInfos = {};
+
+fetch('data/modelInfos.json')
+  .then(response => response.json())
+  .then(data => {
+    modelInfos = data;
+  })
+  .catch(error => console.error("Fehler beim Laden der Datenbank:", error));
+
+
+// Funktion zum Aktualisieren des Info-Slots
+function updateInfoSlot(fileName) {
+  const info = modelInfos[fileName];
+  const modelNameEl = document.getElementById("modelName");
+  const modelPriceEl = document.getElementById("modelPrice");
+  const modelDescEl = document.getElementById("modelDesc");
+
+  if (info) {
+    modelNameEl.textContent = info.name;
+    modelPriceEl.textContent = "Price: " + info.price;
+    modelDescEl.textContent = "Description: " + info.desc;
+  } else {
+    modelNameEl.textContent = "unknown model";
+    modelPriceEl.textContent = "Price: -";
+    modelDescEl.textContent = "Description: no informations avalible.";
+  }
+}
+
 </script>
 
 </body>
