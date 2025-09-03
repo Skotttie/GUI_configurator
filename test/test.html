@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title> WSA model-viewer </title>
+  <title>WSA model-viewer</title>
   <link rel="icon" type="image/png" href="data/wsa logo v2.png">
   <link rel="stylesheet" href="teststyle.css">
   <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
@@ -11,7 +11,7 @@
 <body>
 
 <a href="https://www.wsa.com/" target="_blank">
-  <img src="data\wsa modelviewer logo.png" alt="Logo" id="logo">
+  <img src="data/wsa modelviewer logo.png" alt="Logo" id="logo">
 </a>
 <img src="data/wsa transparent logo.png" alt="Hintergrund" id="bgImg">
 
@@ -24,44 +24,29 @@
 </div>
 
 <div id="sidebarContainer">
-<!-- Sidebar liegt im selben Container wie der Viewer -->
-<div id="sidebar">
-  <button id="toggleSidebar" type="button" aria-controls="sidebarContent" aria-expanded="false">
-    ⯈ Optionen
-  </button>
-
-  <div id="sidebarContent">
-    <button id="fullscreenBtn">Fullscreen ⛶</button>
-    <label class="opt">
-      Auto-Rotation 
-      <input type="checkbox" id="autoRotateToggle" checked>
-    </label>
-    <label class="opt">
-      Hintergrundfarbe:
-      <input type="color" id="bgColorPicker" value="#ffffff">
-    </label>
-  <!-- Reset Hintergrundfarbe -->
-  <button id="resetBgBtn">Standardfarbe</button>
-
-    <!-- weitere Optionen hier -->
-    <!--
-    <label class="opt">
-      Beleuchtung
-      <input type="range" min="0" max="100" value="50">
-    </label>
-    -->
+  <div id="sidebar">
+    <button id="toggleSidebar" type="button" aria-controls="sidebarContent" aria-expanded="false">
+      ⯈ Optionen
+    </button>
+    <div id="sidebarContent">
+      <button id="fullscreenBtn">Fullscreen ⛶</button>
+      <label class="opt">
+        Auto-Rotation 
+        <input type="checkbox" id="autoRotateToggle" checked>
+      </label>
+      <label class="opt">
+        Hintergrundfarbe:
+        <input type="color" id="bgColorPicker" value="#ffffff">
+      </label>
+      <button id="resetBgBtn">Standardfarbe</button>
+    </div>
   </div>
 </div>
-</div>
-
 
 <div id="viewerContainer">
-<!--  <img src="data\vollbild icon.png" id="fullscreenImg" alt="Fullscreen" title="Fullscreen"> --> 
-<!--  <button id="fullscreenBtn">Fullscreen ⛶</button> -->
-
   <model-viewer 
     id="viewer" 
-    src="data\wsa circle logo.glb"
+    src="data/wsa circle logo.glb"
     alt="3D Modell" 
     camera-controls 
     auto-rotate 
@@ -71,38 +56,39 @@
   </model-viewer>
 </div>
 
-<!-- Info-slot-->
- <div id="infoSlot">
+<div id="infoSlot">
   <h3 id="modelName">No model loaded</h3>
   <p id="modelPrice">Price: -</p>
   <p id="modelDesc">No information available</p>
- </div>
+</div>
 
 <script>
 const fileInput = document.getElementById('fileInput');
 const viewer = document.querySelector("model-viewer");
 const resetBtn = document.getElementById('resetBtn');
-const fullscreenBtn = document.getElementById('fullscreenBtn'); /* auf 'fullscreenImg' ändern wenn Img aktiviert werden soll */
-const toggleSidebar = document.getElementById('toggleSidebar');
+const fullscreenBtn = document.getElementById('fullscreenBtn');
+const toggleSidebarBtn = document.getElementById('toggleSidebar');
 const sidebar = document.getElementById('sidebar');
 const autoRotateToggle = document.getElementById("autoRotateToggle");
-const toggleSidebarBtn = document.getElementById('toggleSidebar');
 const bgColorPicker = document.getElementById("bgColorPicker");
 const resetBgBtn = document.getElementById("resetBgBtn");
 
-
-// Variablen für die Startwerte
+// Startwerte Kamera
 let startOrbit, startTarget, startFieldOfView;
 
-// Wenn irgendein Modell geladen wird (egal ob Standard oder Upload)
-viewer.addEventListener('load', () => {
-  startOrbit = viewer.cameraOrbit;
-  startTarget = viewer.cameraTarget;
-  startFieldOfView = viewer.fieldOfView;
-  console.log("Startwerte gespeichert:", startOrbit, startTarget, startFieldOfView);
-});
+// Infoslot-Datenbank laden
+let modelInfos = {};
+let modelInfosLoaded = false;
 
-// Datei wird hochgeladen, ins model-viewer geladen & Infoslot aktualisiert
+// JSON-Daten laden
+fetch('data/modelInfos.json')
+  .then(response => response.json())
+  .then(data => { 
+    modelInfos = data;
+    modelInfosLoaded = true;
+  })
+  .catch(err => console.error("Fehler beim Laden der Datenbank:", err));
+
 fileInput.addEventListener('change', (event) => {
   const file = event.target.files[0];
   if (!file) return;
@@ -111,18 +97,37 @@ fileInput.addEventListener('change', (event) => {
   viewer.src = url;
   viewer.autoRotate = true;
 
-  updateInfoSlot(file.name);
-
+  // Viewer lädt Objekt
   viewer.addEventListener('load', () => {
     URL.revokeObjectURL(url);
-  }, { once: true });
 
-  // Datei zwischenspeichern für später (aber noch NICHT weiterleiten!)
+    // Infoslot aktualisieren, nur wenn JSON geladen ist
+    if(modelInfosLoaded) {
+      updateInfoSlot(file.name);
+    } else {
+      console.log("Warte auf JSON-Daten, Infoslot wird später aktualisiert.");
+    }
+  }, { once: true });
+});
+
+selectBtn.addEventListener('click', () => {
+  const file = fileInput.files[0];
+  if (!file) {
+    alert("Bitte wähle zuerst eine .glb Datei aus!");
+    return;
+  }
+
   const reader = new FileReader();
   reader.onload = () => {
     try {
       sessionStorage.setItem("glbDataUrl", reader.result);
       sessionStorage.setItem("glbFileName", file.name);
+
+      // Infoslot aktualisieren, JSON muss geladen sein
+      if(modelInfosLoaded) updateInfoSlot(file.name);
+
+      fileInput.value = "";
+      window.location.href = "arPlatform.html";
     } catch(e) {
       console.error("Fehler beim Speichern:", e);
       alert("Datei konnte nicht gespeichert werden. Eventuell zu groß.");
@@ -131,89 +136,8 @@ fileInput.addEventListener('change', (event) => {
   reader.readAsDataURL(file);
 });
 
-// Select-Button löst die Weiterleitung aus
-const selectBtn = document.getElementById('selectBtn');
-selectBtn.addEventListener('click', () => {
-  const fileName = sessionStorage.getItem("glbFileName");
-  if (fileName) {
-    window.location.href = "arPlatform.html";
-  } else {
-    alert("Bitte zuerst ein Modell hochladen.");
-  }
-});
 
-
-// Reset-Kamera
-resetBtn.addEventListener('click', () => {
-  if (startOrbit && startTarget && startFieldOfView) {
-    viewer.cameraOrbit = startOrbit;
-    viewer.cameraTarget = startTarget;
-    viewer.fieldOfView = startFieldOfView;
-    viewer.jumpCameraToGoal();
-    console.log("Reset ausgeführt");
-  } else {
-    console.log("Noch keine Startwerte gespeichert!");
-  }
-});
-
-// VollbildButton
-fullscreenBtn.addEventListener('click', () => {
-  if (!document.fullscreenElement) {
-    viewer.requestFullscreen();
-  } else {
-    document.exitFullscreen();
-  }
-})
-/*
-// Sidebar
- toggleSidebar.addEventListener('click', () => {
-  sidebar.classList.toggle('open');
-  toggleSidebar.textContent = sidebar.classList.contains('open') 
-    ? "⯆ Options" 
-    : "⯈ Options";
-}); */
-
-// Sidebar ein/aus + Button-Label
-toggleSidebarBtn.addEventListener('click', () => {
-  const isOpen = sidebar.classList.toggle('open');
-  toggleSidebarBtn.textContent = isOpen ? '⯆ Optionen' : '⯈ Optionen';
-  toggleSidebarBtn.setAttribute('aria-expanded', String(isOpen));
-});
-
-// Auto-Rotation steuern
-autoRotateToggle.addEventListener("change", () => {
-  if (autoRotateToggle.checked) {
-    viewer.setAttribute("auto-rotate", "");
-  } else {
-    viewer.removeAttribute("auto-rotate");
-  }
-});
-// Standardfarbe merken
-const defaultViewerBg = "#e0e0e0";
-
-// Hintergrundfarbe ändern
-bgColorPicker.addEventListener("input", () => {
-  viewer.style.background = bgColorPicker.value;
-});
-
-// Reset auf Standardfarbe
-resetBgBtn.addEventListener("click", () => {
-  viewer.style.background = defaultViewerBg;
-  bgColorPicker.value = defaultViewerBg;
-});
-
-// modelInfo Datenbank abrufen (.json)
-let modelInfos = {};
-
-fetch('data/modelInfos.json')
-  .then(response => response.json())
-  .then(data => {
-    modelInfos = data;
-  })
-  .catch(error => console.error("Fehler beim Laden der Datenbank:", error));
-
-
-// Funktion zum Aktualisieren des Info-Slots
+// Infoslot aktualisieren
 function updateInfoSlot(fileName) {
   const info = modelInfos[fileName];
   const modelNameEl = document.getElementById("modelName");
@@ -227,10 +151,46 @@ function updateInfoSlot(fileName) {
   } else {
     modelNameEl.textContent = "unknown model";
     modelPriceEl.textContent = "Price: -";
-    modelDescEl.textContent = "Description: no informations avalible.";
+    modelDescEl.textContent = "Description: no information available.";
   }
 }
 
+// Reset Kamera
+resetBtn.addEventListener('click', () => {
+  if (startOrbit && startTarget && startFieldOfView) {
+    viewer.cameraOrbit = startOrbit;
+    viewer.cameraTarget = startTarget;
+    viewer.fieldOfView = startFieldOfView;
+    viewer.jumpCameraToGoal();
+  }
+});
+
+// Vollbild
+fullscreenBtn.addEventListener('click', () => {
+  if (!document.fullscreenElement) viewer.requestFullscreen();
+  else document.exitFullscreen();
+});
+
+// Sidebar toggle
+toggleSidebarBtn.addEventListener('click', () => {
+  const isOpen = sidebar.classList.toggle('open');
+  toggleSidebarBtn.textContent = isOpen ? '⯆ Optionen' : '⯈ Optionen';
+  toggleSidebarBtn.setAttribute('aria-expanded', String(isOpen));
+});
+
+// Auto-Rotation
+autoRotateToggle.addEventListener("change", () => {
+  if (autoRotateToggle.checked) viewer.setAttribute("auto-rotate", "");
+  else viewer.removeAttribute("auto-rotate");
+});
+
+// Hintergrundfarbe
+const defaultViewerBg = "#e0e0e0";
+bgColorPicker.addEventListener("input", () => { viewer.style.background = bgColorPicker.value; });
+resetBgBtn.addEventListener("click", () => {
+  viewer.style.background = defaultViewerBg;
+  bgColorPicker.value = defaultViewerBg;
+});
 </script>
 
 </body>

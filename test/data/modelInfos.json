@@ -1,12 +1,12 @@
 {
   "d21047729_angepasst_glb.glb": {
-    "name": "Hörgerät A",
-    "preis": "599 €",
-    "beschreibung": "Ein kompaktes und modernes Hörgerät."
+    "name": "d21047729-1",
+    "price": "599 €",
+    "desc": "Ein kompaktes und modernes Hörgerät."
   },
   "d21048890_2_angepasst_glb.glb": {
-    "name": "Hörgerät B",
-    "preis": "799 €",
-    "beschreibung": "Bietet verbesserte Klangqualität und Bluetooth-Verbindung."
+    "name": "d21048890-2",
+    "price": "799 €",
+    "desc": "Bietet verbesserte Klangqualität und Bluetooth-Verbindung."
   }
 }
