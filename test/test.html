@@ -76,6 +76,19 @@ const resetBgBtn = document.getElementById("resetBgBtn");
 // Startwerte Kamera
 let startOrbit, startTarget, startFieldOfView;
 
+// Funktion zum Speichern der Startwerte
+function saveStartCameraValues() {
+  startOrbit = viewer.cameraOrbit;
+  startTarget = viewer.cameraTarget;
+  startFieldOfView = viewer.fieldOfView;
+  console.log("Startwerte gespeichert:", startOrbit, startTarget, startFieldOfView);
+}
+
+// Viewer lädt erstes Standardmodell -> Startwerte sichern
+viewer.addEventListener("load", () => {
+  saveStartCameraValues();
+}, { once: true });
+
 // Infoslot-Datenbank laden
 let modelInfos = {};
 let modelInfosLoaded = false;
@@ -100,6 +113,8 @@ fileInput.addEventListener('change', (event) => {
   // Viewer lädt Objekt
   viewer.addEventListener('load', () => {
     URL.revokeObjectURL(url);
+
+    saveStartCameraValues();
 
     // Infoslot aktualisieren, nur wenn JSON geladen ist
     if(modelInfosLoaded) {
