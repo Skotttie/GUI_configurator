@@ -32,86 +32,57 @@
            vr-mode-ui="enabled: false"
            device-orientation-permission-ui="enabled: false">
 
-    <!-- Assets: das GLB wird hier dynamisch gesetzt -->
-    <a-assets>
-      <a-asset-item id="userModel" src=""></a-asset-item>
-    </a-assets>
-
     <!-- Kamera (MindAR steuert die Tracking-Kamera) -->
     <a-camera active="false" position="0 0 0"></a-camera>
 
-    <!-- Anchor: anchorIndex steuert, an welchen Landmark angeheftet wird.
-         1 = Nasenspitze (häufig), experimentiere mit anderen Indizes -->
-    <a-entity mindar-face-target="anchorIndex: 1">
-      <!-- Dein Modell, skaliere / offsette falls nötig -->
-    <a-entity mindar-face-target="anchorIndex: 1">
-      <a-entity id="modelEntity" gltf-model="#userModel"
-            scale="0.02 0.02 0.02"
-            position="0 0 0"
+    <!-- Anchor: anchorIndex sagt wo angeheftet wird -->
+<a-entity mindar-face-target="anchorIndex: 4"> <!-- Ohr -->
+  <a-entity id="modelEntity"
+            scale="0.015 0.015 0.015"
+            position="0 -20 0"
             rotation="0 0 0">
-      </a-entity>
-    </a-entity>
-    </a-entity>
-
-  </a-scene>
+  </a-entity>
+</a-entity>
 
 <script>
-(async ()=>{
-  try{
-    // Datei aus SessionStorage
-    const dataUrl = sessionStorage.getItem('glbDataUrl');
-    const fileName = sessionStorage.getItem('glbFileName') || 'Modell';
+window.addEventListener('DOMContentLoaded', async () => {
+  const dataUrl = sessionStorage.getItem('glbDataUrl');
+  const fileName = sessionStorage.getItem('glbFileName') || 'Modell';
+  const badge = document.getElementById('badge');
 
-    if (!dataUrl) {
-      alert('Keine GLB in sessionStorage gefunden. Bitte zuerst upload.html nutzen.');
-      document.getElementById('badge').textContent = 'Keine Datei gefunden';
-      return;
-    }
+  if (!dataUrl) {
+    alert('Keine GLB-Datei gefunden! Bitte zuerst upload.html nutzen.');
+    badge.textContent = 'Keine Datei gefunden';
+    return;
+  }
 
-    // DataURL -> Blob -> ObjectURL (sauberer Weg, statt direkt DataURL an a-asset)
+  try {
     const blob = await (await fetch(dataUrl)).blob();
     const objectURL = URL.createObjectURL(blob);
-
-    // Setze src des a-asset-item (A-Frame lädt das Modell dann automatisch)
-    window.addEventListener('DOMContentLoaded', () => {
-      const assetEl = document.querySelector('#userModel');
-      assetEl.setAttribute('src', objectURL);
-      console.log('Asset Element:', assetEl);
-      console.log('Src aktuell:', assetEl.getAttribute('src'));
-
     const modelEl = document.querySelector('#modelEntity');
-      modelEl.addEventListener('model-loaded', () => console.log('Modell geladen!'));
+
+    // Direkt setzen
+    modelEl.setAttribute('gltf-model', objectURL);
+
+    // Optional: Scale/Offset für Nasenspitze
+    modelEl.setAttribute('position', '-0.5 0.05 -1');
+    modelEl.setAttribute('rotation', '0 270 90');
+    modelEl.setAttribute('scale', '0.2 0.2 0.2');
+    
+
+    // Feedback
+    badge.textContent = `Geladen: ${fileName}`;
+
+    modelEl.addEventListener('model-loaded', () => {
+      console.log('Modell geladen und bereit für Face-Tracking:', modelEl.object3D);
     });
 
-    document.getElementById('badge').textContent = `Geladen: ${fileName}`;
-
-    // Feeds für Debugging
-    const modelEl = document.querySelector('#modelEntity');
-    modelEl.addEventListener('model-loaded', ()=> {
-      console.log('Modell geladen', modelEl.object3D);
-      // Hier kannst du scale/position feinjustieren:
-      // modelEl.setAttribute('scale','0.015 0.015 0.015');
-    });
-
-    // Optional: Wenn du die Anchor-Nummer ändern willst, UI hinzufügen
-    // Beispiel: taste drücken 1..10 und see where it attaches
-    window.addEventListener('keydown', (e) => {
-      const model = document.querySelector('#modelEntity');
-      switch(e.key) {
-      case 'ArrowUp': model.object3D.position.y += 0.005; break;
-      case 'ArrowDown': model.object3D.position.y -= 0.005; break;
-      case 'ArrowLeft': model.object3D.position.x -= 0.005; break;
-      case 'ArrowRight': model.object3D.position.x += 0.005; break;
-      case '+': model.object3D.scale.multiplyScalar(1.05); break;
-     case '-': model.object3D.scale.multiplyScalar(0.95); break;
-    }
-});  
-
-  }catch(err){
+  } catch (err) {
     console.error('Fehler beim Laden des Modells in AR:', err);
-    alert('Fehler beim Laden des Modells. Siehe Konsole.');
+    badge.textContent = 'Fehler beim Laden des Modells';
   }
-})();
+});
 </script>
+
 </body>
 </html>

@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
+    <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-G-10LMZ961FV"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+   function gtag(){dataLayer.push(arguments);}
+   gtag('js', new Date());
+
+    gtag('config', 'G-G-10LMZ961FV');
+  </script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>WSA model-viewer</title>
@@ -93,6 +102,13 @@ viewer.addEventListener("load", () => {
 let modelInfos = {};
 let modelInfosLoaded = false;
 
+// Google analytics
+function trackModelLoad(fileName) {
+  gtag('event', 'model_loaded', {
+    'model_name': fileName
+  });
+}
+
 // JSON-Daten laden
 fetch('data/modelInfos.json')
   .then(response => response.json())
@@ -122,9 +138,11 @@ fileInput.addEventListener('change', (event) => {
     } else {
       console.log("Warte auf JSON-Daten, Infoslot wird später aktualisiert.");
     }
+      // Event senden
+    trackModelLoad(file.name);
+
   }, { once: true });
 });
-
 
 selectBtn.addEventListener('click', () => {
   const file = fileInput.files[0];
